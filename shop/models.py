@@ -10,7 +10,7 @@ class Chair(models.Model):
   duration_weeks = models.IntegerField(default=1)
 
   def __unicode__(self):
-    return '£' + str(self.day_rate) + ' for ' + str(self.duration_weeks) + ' week(s)'
+    return 'Chair: ' + str(self.id) + ' | £' + str(self.day_rate) + ' | ' + str(self.duration_weeks) + ' week(s)'
 
 
 # Red pk/id 1
@@ -24,4 +24,4 @@ class Shop(models.Model):
   bookings = models.BooleanField(default=False)
 
   def __unicode__(self):
-    return 'Shop: ' + self.name
+    return 'Shop: ' + str(self.id) + ' | ' + self.name
