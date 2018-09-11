@@ -1,68 +1,48 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
-from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
-from models import Business
+from .models import Business, Shop, Chair
+from .serializers import BusinessSerializer, ShopsSerializer, ChairsSerializer
 
 import logging
 
-def index(request):
-  b = Business.objects.all()
+# multiples views
 
-  logging.warn(b)
-  # shops = []
+class ShopsView(APIView):
 
-  # for b in all_shops:
-  #   shops.append({
-  #     'name': shop.name,
-  #     'address': shop.address,
-  #     'style': shop.style,
-  #     'shop_image': shop.shop_image,
-  #     'walk_ins': shop.walk_ins,
-  #     'bookings': shop.bookings
-  #   })
+  def get(self, request):
+    ss = Shop.objects.all()
+    serializer = ShopsSerializer(ss, many=True)
 
-  return JsonResponse({
-    'data': {}
-  })
+    return Response(serializer.data)
 
-def shops(request):
-  all_shops = Shop.objects.all()
-  shops = []
+class ChairsView(APIView):
 
-  for shop in all_shops:
-    shops.append({
-      'name': shop.name,
-      'address': shop.address,
-      'style': shop.style,
-      'shop_image': shop.shop_image,
-      'walk_ins': shop.walk_ins,
-      'bookings': shop.bookings
-    })
+  def get(self, request):
+    cs = Chair.objects.all()
+    serializer = ChairsSerializer(cs, many=True)
 
-  return JsonResponse({
-    'data': shops
-  })
+    return Response(serializer.data)
 
-def shop(request, shop_id):
-  filtered_shop = Shop.objects.filter(id=shop_id)
+# singleton views
+class BusinessView(APIView):
 
-  logging.warn(filtered_shop.values())
-  shop = {}
-  for s in filtered_shop:
-    shop['name'] = s.name
-    shop['address'] = s.address
-    shop['style'] = s.style
-    shop['shop_image'] = s.shop_image
-    shop['walk_ins'] = s.walk_ins
-    shop['bookings'] = s.bookings
+  def get(self, request):
+    b = Business.objects.all()
+    serializer = BusinessSerializer(b, many=True)
 
-  return JsonResponse(shop)
+    return Response(serializer.data)
 
-# def chairs(request, shop_id):
-#   shop_chairs = Shop.objects.filter(id=shop_id).values('chairs')
+class ShopView(APIView):
 
-#   chairs = []
-#   return JsonResponse({ 'data': chairs })
+  def get(self, request, shop_id):
+    s = Shop.objects.filter(id=shop_id)
+    serializer = ShopsSerializer(s, many=True)
+
+    return Response(serializer.data)
+
