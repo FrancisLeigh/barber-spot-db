@@ -16,7 +16,7 @@ class ChairsSerializer(serializers.ModelSerializer):
     fields = '__all__'
 
 class ShopsSerializer(serializers.ModelSerializer):
-  chairs = ChairsSerializer(many=True)
+  chairs = ChairsSerializer(allow_null=True, many=True)
   class Meta:
     model = Shop
 

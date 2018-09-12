@@ -6,6 +6,7 @@ from django.db import models
 import logging
 
 class Chair(models.Model):
+  shop_id = models.ForeignKey('Shop', null=True, blank=True)
   day_rate = models.IntegerField(default=100)
   duration_weeks = models.IntegerField(default=1)
 
@@ -17,7 +18,7 @@ class Shop(models.Model):
   address = models.CharField(max_length=500)
   style = models.CharField(max_length=100)
   shop_image = models.CharField(max_length=1000)
-  chairs = models.ManyToManyField(Chair)
+  chairs = models.OneToOneField(Chair, on_delete=models.CASCADE)
   walk_ins = models.BooleanField(default=False)
   bookings = models.BooleanField(default=False)
 
@@ -28,7 +29,7 @@ class Business(models.Model):
   name = models.CharField(max_length=250)
   address = models.CharField(max_length=500, blank=True)
   business_image = models.CharField(max_length=1000, blank=True)
-  shops = models.ForeignKey(Shop, on_delete=models.SET_NULL, null=True)
+  shops = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
 
   def __unicode__(self):
     return self.name

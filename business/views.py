@@ -11,6 +11,20 @@ from .serializers import BusinessSerializer, ShopsSerializer, ChairsSerializer
 
 import clr
 
+def get_status(s):
+  if s == 'UPDATED':
+    return status.HTTP_202_ACCEPTED
+  elif s == 'CREATED':
+    return status.HTTP_201_CREATED
+  elif s == 'DELETED':
+    return status.HTTP_204_NO_CONTENT
+  elif s == 'ERROR':
+    return status.HTTP_400_BAD_REQUEST
+  else:
+    return status.HTTP_200_OK
+
+
+
 class BusinessView(APIView):
 
   def get(self, request):
@@ -28,6 +42,16 @@ class ShopsView(APIView):
 
     return Response(serializer.data)
 
+  def post(self, request):
+    serializer = ShopsSerializer(data=request.data)
+
+    if serializer.is_valid():
+      serializer.save()
+
+      return Response(serializer.data, status=get_status('CREATED'))
+
+    return Response(serializer.errors, status=get_status('ERROR'))
+
 class ShopView(APIView):
 
   def get(self, request, shop_id):
@@ -36,36 +60,68 @@ class ShopView(APIView):
 
     return Response(serializer.data)
 
-class ShopChairsView(APIView):
-
-  def get(self, request, shop_id):
-    cs = Chair.objects.filter(shop=shop_id)
-    serializer = ChairsSerializer(cs, many=True)
-
-    return Response(serializer.data)
-
   def put(self, request, shop_id):
-    serializedShop = ShopsSerializer(Shop.objects.filter(id=shop_id))
-    serializer = ChairsSerializer(serializedShop.get_fields().get('chairs'), data=request.data)
+    s = Shop.objects.filter(id=shop_id).first()
+    serializer = ShopsSerializer(s, data=request.data)
 
     if serializer.is_valid():
       serializer.save()
-      return Response(serializer.data, status=status.HTTP_201_CREATED)
+      return Response(serializer.data, status=get_status('UPDATED'))
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=get_status('ERROR'))
 
+  def delete(self, request, shop_id):
+    shopToDelete = Shop.objects.filter(id=shop_id).first()
+    shopToDelete.delete()
+
+    return Response(status=get_status('DELETED'))
 
 # Chair
 class ChairsView(APIView):
 
-  def get(self, request, shop_id=False, chair_id=False):
-    if chair_id and shop_id:
-      cs = Chair.objects.filter(shop=shop_id, id=chair_id)
-    elif chair_id and shop_id is False:
-      cs = Chair.objects.filter(id=chair_id)
-    else:
+  def get(self, request, shop_id=False):
+    if shop_id is False:
       cs = Chair.objects.all()
+    else:
+      cs = Chair.objects.filter(shop_id=shop_id)
 
     serializer = ChairsSerializer(cs, many=True)
 
     return Response(serializer.data)
+
+  def post(self, request, shop_id=False):
+    serializer = ChairsSerializer(data=request.data)
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=get_status('CREATED'))
+
+    return Response(serializer.errors, status=get_status('ERROR'))
+
+class ChairView(APIView):
+  def get(self, request, shop_id=False, chair_id=False):
+    if chair_id and shop_id:
+      c = Chair.objects.filter(shop_id=shop_id, id=chair_id)
+    elif chair_id and shop_id is False:
+      c = Chair.objects.filter(id=chair_id)
+
+    serializer = ChairsSerializer(c, many=True)
+
+    return Response(serializer.data)
+
+  def put(self, request, shop_id=False, chair_id=False):
+    editedData = request.data
+    chairToEdit = Chair.objects.filter(id=chair_id).first()
+    serializer = ChairsSerializer(chairToEdit, data=editedData)
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=get_status('UPDATED'))
+
+    return Response(serializer.errors, status=get_status('ERROR'))
+
+  def delete(self, request, shop_id=False, chair_id=False):
+    chairToDelete = Chair.objects.filter(id=chair_id).first()
+    chairToDelete.delete()
+
+    return Response(status=get_status('DELETED'))
