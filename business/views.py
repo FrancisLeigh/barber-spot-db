@@ -9,7 +9,7 @@ from rest_framework import status
 from .models import Business, Shop, Chair
 from .serializers import BusinessSerializer, ShopsSerializer, ChairsSerializer
 
-import logging
+import clr
 
 class BusinessView(APIView):
 
@@ -43,6 +43,17 @@ class ShopChairsView(APIView):
     serializer = ChairsSerializer(cs, many=True)
 
     return Response(serializer.data)
+
+  def put(self, request, shop_id):
+    serializedShop = ShopsSerializer(Shop.objects.filter(id=shop_id))
+    serializer = ChairsSerializer(serializedShop.get_fields().get('chairs'), data=request.data)
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Chair
 class ChairsView(APIView):
