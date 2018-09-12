@@ -6,7 +6,6 @@ from django.db import models
 import logging
 
 class Chair(models.Model):
-  p_id =  models.ForeignKey('Shop', null=True)
   day_rate = models.IntegerField(default=100)
   duration_weeks = models.IntegerField(default=1)
 
@@ -14,12 +13,11 @@ class Chair(models.Model):
     return 'Chair: ' + str(self.id) + ' | £' + str(self.day_rate) + ' | ' + str(self.duration_weeks) + ' week(s)'
 
 class Shop(models.Model):
-  p_id = models.ForeignKey('Business', null=True)
   name = models.CharField(max_length=250)
   address = models.CharField(max_length=500)
   style = models.CharField(max_length=100)
   shop_image = models.CharField(max_length=1000)
-  chairs = models.ForeignKey(Chair, on_delete=models.SET_NULL, blank=True, null=True)
+  chairs = models.ManyToManyField(Chair)
   walk_ins = models.BooleanField(default=False)
   bookings = models.BooleanField(default=False)
 

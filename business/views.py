@@ -37,9 +37,8 @@ class ShopView(APIView):
     return Response(serializer.data)
 
 class ShopChairsView(APIView):
-
   def get(self, request, shop_id):
-    cs = Chair.objects.filter(p_id=shop_id)
+    cs = Chair.objects.filter(shop=shop_id)
     serializer = ChairsSerializer(cs, many=True)
 
     return Response(serializer.data)
@@ -49,7 +48,7 @@ class ChairsView(APIView):
 
   def get(self, request, shop_id=False, chair_id=False):
     if chair_id and shop_id:
-      cs = Shop.objects.filter(id=shop_id, chair__id=chair_id)
+      cs = Chair.objects.filter(shop=shop_id, id=chair_id)
     elif chair_id and shop_id is False:
       cs = Chair.objects.filter(id=chair_id)
     else:
