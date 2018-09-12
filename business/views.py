@@ -37,6 +37,7 @@ class ShopView(APIView):
     return Response(serializer.data)
 
 class ShopChairsView(APIView):
+
   def get(self, request, shop_id):
     cs = Chair.objects.filter(shop=shop_id)
     serializer = ChairsSerializer(cs, many=True)
