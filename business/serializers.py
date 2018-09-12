@@ -8,7 +8,7 @@ class BusinessSerializer(serializers.ModelSerializer):
     fields = '__all__'
 
 class ShopsSerializer(serializers.ModelSerializer):
-  chairs = serializers.PrimaryKeyRelatedField(read_only=True)
+  # chairs = serializers.PrimaryKeyRelatedField(read_only=True)
   class Meta:
     model = Shop
 
