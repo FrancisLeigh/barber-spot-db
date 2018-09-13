@@ -1,14 +1,13 @@
 from rest_framework import serializers
-from .models import Business, Shop, Chair
+from .models import Business, Shop, Chair, TimeSlot
 
 import clr
 
-class BusinessSerializer(serializers.ModelSerializer):
+class TimeSlotsSerializer(serializers.ModelSerializer):
   class Meta:
-    model = Business
+    model = TimeSlot
 
     fields = '__all__'
-
 class ChairsSerializer(serializers.ModelSerializer):
   class Meta:
     model = Chair
@@ -16,8 +15,16 @@ class ChairsSerializer(serializers.ModelSerializer):
     fields = '__all__'
 
 class ShopsSerializer(serializers.ModelSerializer):
-  chairs = ChairsSerializer(allow_null=True, many=True)
+  # chairs = ChairsSerializer()
   class Meta:
     model = Shop
+
+    fields = '__all__'
+
+
+class BusinessSerializer(serializers.ModelSerializer):
+  shops = ShopsSerializer()
+  class Meta:
+    model = Business
 
     fields = '__all__'

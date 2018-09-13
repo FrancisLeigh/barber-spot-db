@@ -4,23 +4,33 @@ from __future__ import unicode_literals
 from django.db import models
 
 import logging
+from datetime import datetime, timedelta
+from django.utils import timezone
 
-class Chair(models.Model):
-  shop_id = models.ForeignKey('Shop', null=True, blank=True)
-  day_rate = models.IntegerField(default=100)
-  duration_weeks = models.IntegerField(default=1)
+class TimeSlot(models.Model):
+  chair_id = models.ForeignKey('Chair', null=True)
+  start = models.DateField(default=timezone.now)
+  end = models.DateField()
 
   def __unicode__(self):
-    return 'Chair: ' + str(self.id) + ' | £' + str(self.day_rate) + ' | ' + str(self.duration_weeks) + ' week(s)'
+    return 'From: ' + str(self.start) + ' until: ' + str(self.end)
+
+class Chair(models.Model):
+  shop_id = models.ForeignKey('Shop', on_delete=models.SET_NULL, null=True)
+  day_rate = models.IntegerField(default=100)
+
+  def __unicode__(self):
+    return 'Chair: ' + str(self.id) + ' | £' + str(self.day_rate) + ' | '
 
 class Shop(models.Model):
   name = models.CharField(max_length=250)
   address = models.CharField(max_length=500)
   style = models.CharField(max_length=100)
   shop_image = models.CharField(max_length=1000)
-  chairs = models.OneToOneField(Chair, on_delete=models.CASCADE)
   walk_ins = models.BooleanField(default=False)
   bookings = models.BooleanField(default=False)
+  opening_time = models.TimeField(auto_now=False, default=datetime.now().replace(hour=9, minute=0, second=0, microsecond=0))
+  closing_time = models.TimeField(auto_now=False, default=datetime.now().replace(hour=17, minute=30, second=0, microsecond=0))
 
   def __unicode__(self):
     return 'Shop: ' + str(self.id) + ' | ' + self.name

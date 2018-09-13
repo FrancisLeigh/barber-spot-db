@@ -23,6 +23,10 @@ urlpatterns = [
 
   #/business/chairs/<chair_id>
   url(r'^chairs/(?P<chair_id>[0-9]+)$', views.ChairView.as_view(), name='chairs'),
+
+  url(r'^chairs/(?P<chair_id>[0-9]+)/time-slots/$', views.TimeSlotsView.as_view(), name='chair-time-slots'),
+
+  url(r'^time-slots/(?P<slot_id>[0-9]+)/$', views.TimeSlotView.as_view(), name='time_slot'),
 ]
 
 # urlpatterns = format_suffix_patterns(urlpatterns)

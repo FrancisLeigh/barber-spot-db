@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Business, Shop, Chair
-from .serializers import BusinessSerializer, ShopsSerializer, ChairsSerializer
+from .models import Business, Shop, Chair, TimeSlot
+from .serializers import BusinessSerializer, ShopsSerializer, ChairsSerializer, TimeSlotsSerializer
 
 import clr
 
@@ -55,8 +55,8 @@ class ShopsView(APIView):
 class ShopView(APIView):
 
   def get(self, request, shop_id):
-    s = Shop.objects.filter(id=shop_id)
-    serializer = ShopsSerializer(s, many=True)
+    s = Shop.objects.filter(id=shop_id).first()
+    serializer = ShopsSerializer(s)
 
     return Response(serializer.data)
 
@@ -101,11 +101,11 @@ class ChairsView(APIView):
 class ChairView(APIView):
   def get(self, request, shop_id=False, chair_id=False):
     if chair_id and shop_id:
-      c = Chair.objects.filter(shop_id=shop_id, id=chair_id)
+      c = Chair.objects.filter(shop_id=shop_id, id=chair_id).first()
     elif chair_id and shop_id is False:
-      c = Chair.objects.filter(id=chair_id)
+      c = Chair.objects.filter(id=chair_id).first()
 
-    serializer = ChairsSerializer(c, many=True)
+    serializer = ChairsSerializer(c)
 
     return Response(serializer.data)
 
@@ -125,3 +125,43 @@ class ChairView(APIView):
     chairToDelete.delete()
 
     return Response(status=get_status('DELETED'))
+
+class TimeSlotsView(APIView):
+  def get(self, request, chair_id=False):
+    tss = TimeSlot.objects.filter(chair_id=chair_id)
+    serializer = TimeSlotsSerializer(tss, many=True)
+
+    return Response(serializer.data)
+
+class TimeSlotView(APIView):
+  def get(self, request, slot_id):
+    ts = TimeSlot.objects.filter(id=slot_id).first()
+    serializer = TimeSlotsSerializer(ts)
+
+    return Response(serializer.data)
+
+  def put(self, request, slot_id):
+    editedData = request.data
+    slotToEdit = TimeSlot.filter(id=slot_id).first()
+    serializer = TimeSlotsSerializer(slotToEdit, data=editedData)
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=get_status('UPDATED'))
+
+    return Response(serializer.errors, status=get_status('ERROR'))
+
+  def delete(self, request, slot_id):
+    slotToDelete = TimeSlot.objects.filter(id=slot_id).first()
+    slotToDelete.delete()
+
+    return Response(status=get_status('DELETED'))
+
+  def post(self, request, chair_id):
+    serializer = TimeSlotsSerializer(data=request.data)
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=get_status('CREATED'))
+
+    return Response(serializer.errors, status=get_status('ERROR'))
