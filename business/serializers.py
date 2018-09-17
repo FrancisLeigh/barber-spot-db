@@ -7,12 +7,12 @@ class TimeSlotsSerializer(serializers.ModelSerializer):
   class Meta:
     model = TimeSlot
 
-    fields = '__all__'
+    fields = ('start', 'end', 'id')
 class ChairsSerializer(serializers.ModelSerializer):
   class Meta:
     model = Chair
 
-    fields = '__all__'
+    fields = ('day_rate', 'id')
 
 class ShopsSerializer(serializers.ModelSerializer):
   # chairs = ChairsSerializer()
@@ -20,7 +20,6 @@ class ShopsSerializer(serializers.ModelSerializer):
     model = Shop
 
     fields = '__all__'
-
 
 class BusinessSerializer(serializers.ModelSerializer):
   shops = ShopsSerializer()
