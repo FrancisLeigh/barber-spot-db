@@ -81,9 +81,9 @@ class ChairsView(APIView):
 
   def get(self, request, shop_id=False):
     if shop_id is False:
-      cs = Chair.objects.all()
+      cs = Chair.objects.all().order_by('shop_id')
     else:
-      cs = Chair.objects.filter(shop_id=shop_id)
+      cs = Chair.objects.filter(shop_id=shop_id).order_by('shop_id')
 
     serializer = ChairsSerializer(cs, many=True)
 
@@ -129,24 +129,33 @@ class ChairView(APIView):
 class TimeSlotsView(APIView):
   def get(self, request, chair_id=False):
     if chair_id is False:
-      tss = TimeSlot.objects.all()
+      tss = TimeSlot.objects.all().order_by('chair_id')
     else:
-      tss = TimeSlot.objects.filter(chair_id=chair_id)
+      tss = TimeSlot.objects.filter(chair_id=chair_id).order_by('chair_id')
 
     serializer = TimeSlotsSerializer(tss, many=True)
 
     return Response(serializer.data)
 
+  def post(self, request):
+    serializer = TimeSlotsSerializer(data=request.data)
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=get_status('CREATED'))
+
+    return Response(serializer.errors, status=get_status('ERROR'))
+
 class TimeSlotView(APIView):
   def get(self, request, slot_id):
     ts = TimeSlot.objects.filter(id=slot_id).first()
-    serializer = TimeSlotsSerializer(ts, context={'show_chair': True})
+    serializer = TimeSlotsSerializer(ts)
 
     return Response(serializer.data)
 
-  def put(self, request, slot_id):
+  def put(self, request, slot_id=False):
     editedData = request.data
-    slotToEdit = TimeSlot.filter(id=slot_id).first()
+    slotToEdit = TimeSlot.objects.filter(id=slot_id).first()
     serializer = TimeSlotsSerializer(slotToEdit, data=editedData)
 
     if serializer.is_valid():
@@ -155,17 +164,8 @@ class TimeSlotView(APIView):
 
     return Response(serializer.errors, status=get_status('ERROR'))
 
-  def delete(self, request, slot_id):
+  def delete(self, request, slot_id=False):
     slotToDelete = TimeSlot.objects.filter(id=slot_id).first()
     slotToDelete.delete()
 
     return Response(status=get_status('DELETED'))
-
-  def post(self, request, chair_id):
-    serializer = TimeSlotsSerializer(data=request.data)
-
-    if serializer.is_valid():
-      serializer.save()
-      return Response(serializer.data, status=get_status('CREATED'))
-
-    return Response(serializer.errors, status=get_status('ERROR'))

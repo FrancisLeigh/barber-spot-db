@@ -6,6 +6,7 @@ import clr
 class TimeSlotsSerializer(serializers.ModelSerializer):
   class Meta:
     model = TimeSlot
+    ordering = ('chair_id', )
     fields = '__all__'
 
 
