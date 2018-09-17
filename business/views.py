@@ -90,6 +90,11 @@ class ChairsView(APIView):
     return Response(serializer.data)
 
   def post(self, request, shop_id=False):
+    if request.data['shop_id']:
+      pass
+    else:
+      request.data['shop_id'] = shop_id
+
     serializer = ChairsSerializer(data=request.data)
 
     if serializer.is_valid():
@@ -137,7 +142,12 @@ class TimeSlotsView(APIView):
 
     return Response(serializer.data)
 
-  def post(self, request):
+  def post(self, request, chair_id=False):
+    if request.data['chair_id']:
+      pass
+    else:
+      request.data['chair_id'] = chair_id
+
     serializer = TimeSlotsSerializer(data=request.data)
 
     if serializer.is_valid():
