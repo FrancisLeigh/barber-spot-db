@@ -128,7 +128,11 @@ class ChairView(APIView):
 
 class TimeSlotsView(APIView):
   def get(self, request, chair_id=False):
-    tss = TimeSlot.objects.filter(chair_id=chair_id)
+    if chair_id is False:
+      tss = TimeSlot.objects.all()
+    else:
+      tss = TimeSlot.objects.filter(chair_id=chair_id)
+
     serializer = TimeSlotsSerializer(tss, many=True)
 
     return Response(serializer.data)
@@ -136,7 +140,7 @@ class TimeSlotsView(APIView):
 class TimeSlotView(APIView):
   def get(self, request, slot_id):
     ts = TimeSlot.objects.filter(id=slot_id).first()
-    serializer = TimeSlotsSerializer(ts)
+    serializer = TimeSlotsSerializer(ts, context={'show_chair': True})
 
     return Response(serializer.data)
 

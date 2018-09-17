@@ -4,25 +4,28 @@ from __future__ import unicode_literals
 from django.db import models
 
 import logging
+import clr
 from datetime import datetime, timedelta
 from django.utils import timezone
 
 class TimeSlot(models.Model):
   chair_id = models.ForeignKey('Chair', null=True)
-  start = models.DateField(default=timezone.now)
-  end = models.DateField()
+  start_date = models.DateField(default=timezone.now)
+  end_date = models.DateField(default=datetime.now()+timedelta(days=7), null=True)
 
   def __unicode__(self):
-    return 'From: ' + str(self.start) + ' until: ' + str(self.end)
+    return 'From: ' + str(self.start_date) + ' until: ' + str(self.end_date)
 
 class Chair(models.Model):
-  shop_id = models.ForeignKey('Shop', on_delete=models.SET_NULL, null=True)
+  shop_id = models.ForeignKey('Shop', null=True)
   day_rate = models.IntegerField(default=100)
+  time_slots = models.ForeignKey('TimeSlot', on_delete=models.CASCADE, null=True, editable=False, blank=True)
 
   def __unicode__(self):
-    return 'Chair: ' + str(self.id) + ' | £' + str(self.day_rate) + ' | '
+    return 'Chair: ' + str(self.id) + ' | £' + str(self.day_rate) + 'pd'
 
 class Shop(models.Model):
+  business_id = models.ForeignKey('Business', null=True)
   name = models.CharField(max_length=250)
   address = models.CharField(max_length=500)
   style = models.CharField(max_length=100)
@@ -31,6 +34,7 @@ class Shop(models.Model):
   bookings = models.BooleanField(default=False)
   opening_time = models.TimeField(auto_now=False, default=datetime.now().replace(hour=9, minute=0, second=0, microsecond=0))
   closing_time = models.TimeField(auto_now=False, default=datetime.now().replace(hour=17, minute=30, second=0, microsecond=0))
+  chairs = models.ForeignKey('Chair', null=True, on_delete=models.CASCADE, blank=True, editable=False)
 
   def __unicode__(self):
     return 'Shop: ' + str(self.id) + ' | ' + self.name
@@ -39,7 +43,7 @@ class Business(models.Model):
   name = models.CharField(max_length=250)
   address = models.CharField(max_length=500, blank=True)
   business_image = models.CharField(max_length=1000, blank=True)
-  shops = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
+  shops = models.ForeignKey(Shop, null=True, editable=False)
 
   def __unicode__(self):
     return self.name
