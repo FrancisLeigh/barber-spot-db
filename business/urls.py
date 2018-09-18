@@ -4,13 +4,17 @@ from . import views
 
 urlpatterns = [
   # /business/
-  url(r'^$', views.BusinessView.as_view(), name='BusinessView'),
+  url(r'^$', views.BusinessView.as_view(), name='business'),
+
+  url(r'^address/$', views.AddressView.as_view(), name='business_address'),
 
   # /business/shops/
   url(r'^shops/$', views.ShopsView.as_view(), name='shops'),
 
   # /business/shops/<shop_id>/
   url(r'^shops/(?P<shop_id>[0-9]+)/$', views.ShopView.as_view(), name='shop'),
+
+  url(r'^shops/(?P<shop_id>[0-9]+)/address/$', views.AddressView.as_view(), name='shop_address'),
 
   # /business/shops/<shop_id>/chairs
   url(r'^shops/(?P<shop_id>[0-9]+)/chairs/$', views.ChairsView.as_view(), name='shop_chairs'),

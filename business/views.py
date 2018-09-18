@@ -33,6 +33,21 @@ class BusinessView(APIView):
 
     return Response(serializer.data)
 
+class AddressView(APIView):
+  def get(self, request, shop_id=False):
+    if shop_id:
+      id_key = 'shop_id'
+      premesis = Shop.objects.filter(id=shop_id).first()
+    else:
+      id_key = 'business_id'
+      premesis = Business.objects.all().first()
+
+    return Response({
+      str(id_key): str(premesis.id),
+      'address': str(premesis.address)
+    })
+
+
 # Shop
 class ShopsView(APIView):
 

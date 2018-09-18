@@ -7,7 +7,7 @@ import logging
 import clr
 from datetime import datetime, timedelta
 from django.utils import timezone
-
+from address.models import AddressField
 class TimeSlot(models.Model):
   chair_id = models.ForeignKey('Chair', null=True)
   start_date = models.DateField(default=timezone.now)
@@ -27,7 +27,7 @@ class Chair(models.Model):
 class Shop(models.Model):
   business_id = models.ForeignKey('Business', null=True)
   name = models.CharField(max_length=250)
-  address = models.CharField(max_length=500)
+  address = AddressField(null=True)
   style = models.CharField(max_length=100)
   shop_image = models.CharField(max_length=1000)
   walk_ins = models.BooleanField(default=False)
@@ -41,9 +41,10 @@ class Shop(models.Model):
 
 class Business(models.Model):
   name = models.CharField(max_length=250)
-  address = models.CharField(max_length=500, blank=True)
+  address = AddressField(null=True)
   business_image = models.CharField(max_length=1000, blank=True)
   shops = models.ForeignKey(Shop, null=True, editable=False)
 
   def __unicode__(self):
-    return self.name
+    print(clr.red.bold(self.address))
+    return self.name + ' | ' + str(self.address)
