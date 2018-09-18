@@ -8,6 +8,7 @@ import clr
 from datetime import datetime, timedelta
 from django.utils import timezone
 from address.models import AddressField
+
 class TimeSlot(models.Model):
   chair_id = models.ForeignKey('Chair', null=True)
   start_date = models.DateField(default=timezone.now)
@@ -32,13 +33,36 @@ class Shop(models.Model):
   shop_image = models.CharField(max_length=1000)
   walk_ins = models.BooleanField(default=False)
   bookings = models.BooleanField(default=False)
-  opening_time = models.TimeField(auto_now=False, default=datetime.now().replace(hour=9, minute=0, second=0, microsecond=0))
-  closing_time = models.TimeField(auto_now=False, default=datetime.now().replace(hour=17, minute=30, second=0, microsecond=0))
   chairs = models.ForeignKey('Chair', null=True, on_delete=models.CASCADE, blank=True, editable=False)
+
+  hours = models.ForeignKey('TradeTime', null=True)
 
   def __unicode__(self):
     return 'Shop: ' + str(self.id) + ' | ' + self.name
 
+class TradeTime(models.Model):
+  shop_id = models.ForeignKey('Shop', null=True)
+  monday = models.ForeignKey('DayTradeTime', related_name='monday', null=True, blank=True)
+  tuesday = models.ForeignKey('DayTradeTime', related_name='tuesday', null=True, blank=True)
+  wednesday = models.ForeignKey('DayTradeTime', related_name='wednesday', null=True, blank=True)
+  thursday = models.ForeignKey('DayTradeTime', related_name='thursday', null=True, blank=True)
+  friday = models.ForeignKey('DayTradeTime', related_name='friday', null=True, blank=True)
+  saturday = models.ForeignKey('DayTradeTime', related_name='saturday', null=True, blank=True)
+  sunday = models.ForeignKey('DayTradeTime', related_name='sunday', null=True, blank=True)
+
+  def __unicode__(self):
+    return str(self.shop_id)
+
+class DayTradeTime(models.Model):
+  opens_at = models.TimeField(auto_now=False, default=datetime.now().replace(hour=9, minute=0, second=0, microsecond=0))
+  closes_at = models.TimeField(auto_now=False, default=datetime.now().replace(hour=17, minute=30, second=0, microsecond=0))
+  closed = models.BooleanField(default=False)
+
+  def __unicode__(self):
+    if self.closed:
+      return 'closed'
+    else:
+      return str(self.opens_at) + ' - ' + str(self.closes_at)
 class Business(models.Model):
   name = models.CharField(max_length=250)
   address = AddressField(null=True)
@@ -47,3 +71,8 @@ class Business(models.Model):
 
   def __unicode__(self):
     return self.name + ' | ' + str(self.address)
+
+
+
+# opening_time = models.TimeField(auto_now=False, default=datetime.now().replace(hour=9, minute=0, second=0, microsecond=0))
+# closing_time = models.TimeField(auto_now=False, default=datetime.now().replace(hour=17, minute=30, second=0, microsecond=0))

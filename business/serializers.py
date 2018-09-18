@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Business, Shop, Chair, TimeSlot
+from .models import Business, Shop, Chair, TimeSlot, TradeTime, DayTradeTime
 
 import clr
 
@@ -9,6 +9,25 @@ class TimeSlotsSerializer(serializers.ModelSerializer):
     ordering = ('chair_id', )
     fields = '__all__'
 
+class DaysSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = DayTradeTime
+
+    fields = '__all__'
+
+class HoursSerializer(serializers.ModelSerializer):
+  monday = DaysSerializer()
+  tuesday = DaysSerializer()
+  wednesday = DaysSerializer()
+  tuesday = DaysSerializer()
+  thursday = DaysSerializer()
+  friday = DaysSerializer()
+  saturday = DaysSerializer()
+  sunday = DaysSerializer()
+  class Meta:
+    model = TradeTime
+
+    fields = '__all__'
 
 class ChairsSerializer(serializers.ModelSerializer):
   class Meta:
@@ -16,6 +35,7 @@ class ChairsSerializer(serializers.ModelSerializer):
     exclude = ('time_slots', )
 
 class ShopsSerializer(serializers.ModelSerializer):
+  hours = HoursSerializer()
   class Meta:
     model = Shop
     exclude = ('chairs' ,)
