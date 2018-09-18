@@ -9,21 +9,21 @@ class TimeSlotsSerializer(serializers.ModelSerializer):
     ordering = ('chair_id', )
     fields = '__all__'
 
-class DaysSerializer(serializers.ModelSerializer):
+class DaySerializer(serializers.ModelSerializer):
   class Meta:
     model = DayTradeTime
 
     fields = '__all__'
 
 class HoursSerializer(serializers.ModelSerializer):
-  monday = DaysSerializer()
-  tuesday = DaysSerializer()
-  wednesday = DaysSerializer()
-  tuesday = DaysSerializer()
-  thursday = DaysSerializer()
-  friday = DaysSerializer()
-  saturday = DaysSerializer()
-  sunday = DaysSerializer()
+  monday = DaySerializer()
+  tuesday = DaySerializer()
+  wednesday = DaySerializer()
+  tuesday = DaySerializer()
+  thursday = DaySerializer()
+  friday = DaySerializer()
+  saturday = DaySerializer()
+  sunday = DaySerializer()
   class Meta:
     model = TradeTime
 

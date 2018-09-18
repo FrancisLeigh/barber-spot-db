@@ -35,13 +35,13 @@ class Shop(models.Model):
   bookings = models.BooleanField(default=False)
   chairs = models.ForeignKey('Chair', null=True, on_delete=models.CASCADE, blank=True, editable=False)
 
-  hours = models.ForeignKey('TradeTime', null=True)
+  hours = models.OneToOneField('TradeTime', null=True)
 
   def __unicode__(self):
     return 'Shop: ' + str(self.id) + ' | ' + self.name
 
 class TradeTime(models.Model):
-  shop_id = models.ForeignKey('Shop', null=True)
+  shop_id = models.OneToOneField('Shop', null=True)
   monday = models.ForeignKey('DayTradeTime', related_name='monday', null=True, blank=True)
   tuesday = models.ForeignKey('DayTradeTime', related_name='tuesday', null=True, blank=True)
   wednesday = models.ForeignKey('DayTradeTime', related_name='wednesday', null=True, blank=True)
@@ -54,6 +54,7 @@ class TradeTime(models.Model):
     return str(self.shop_id)
 
 class DayTradeTime(models.Model):
+  shop_id = models.ForeignKey('Shop', null=True)
   opens_at = models.TimeField(auto_now=False, default=datetime.now().replace(hour=9, minute=0, second=0, microsecond=0))
   closes_at = models.TimeField(auto_now=False, default=datetime.now().replace(hour=17, minute=30, second=0, microsecond=0))
   closed = models.BooleanField(default=False)
@@ -71,8 +72,3 @@ class Business(models.Model):
 
   def __unicode__(self):
     return self.name + ' | ' + str(self.address)
-
-
-
-# opening_time = models.TimeField(auto_now=False, default=datetime.now().replace(hour=9, minute=0, second=0, microsecond=0))
-# closing_time = models.TimeField(auto_now=False, default=datetime.now().replace(hour=17, minute=30, second=0, microsecond=0))

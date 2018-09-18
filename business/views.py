@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Business, Shop, Chair, TimeSlot
-from .serializers import BusinessSerializer, ShopsSerializer, ChairsSerializer, TimeSlotsSerializer
+from .models import Business, Shop, Chair, TimeSlot, DayTradeTime, TradeTime
+from .serializers import BusinessSerializer, ShopsSerializer, ChairsSerializer, TimeSlotsSerializer, HoursSerializer, DaySerializer
 
 import clr
 
@@ -195,3 +195,18 @@ class TimeSlotView(APIView):
     slotToDelete.delete()
 
     return Response(status=get_status('DELETED'))
+
+
+class HoursView(APIView):
+  def get(self, request, shop_id=False):
+    hrs = TradeTime.objects.filter(shop_id=shop_id).first()
+    serializer = HoursSerializer(hrs)
+
+    return Response(serializer.data)
+
+class DayView(APIView):
+  def get(self, request, shop_id=False, day_id=False):
+    day = DayTradeTime.objects.filter(shop_id=shop_id, id=day_id).first()
+    serializer = DaySerializer(day)
+
+    return Response(serializer.data)

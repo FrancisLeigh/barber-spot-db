@@ -16,6 +16,9 @@ urlpatterns = [
 
   url(r'^shops/(?P<shop_id>[0-9]+)/address/$', views.AddressView.as_view(), name='shop_address'),
 
+  url(r'^shops/(?P<shop_id>[0-9]+)/hours/$', views.HoursView.as_view(), name='shop_hours'),
+  url(r'^shops/(?P<shop_id>[0-9]+)/hours/(?P<day_id>[0-9]+)$', views.DayView.as_view(), name='shop_day_hour'),
+
   # /business/shops/<shop_id>/chairs
   url(r'^shops/(?P<shop_id>[0-9]+)/chairs/$', views.ChairsView.as_view(), name='shop_chairs'),
 
