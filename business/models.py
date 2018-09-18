@@ -46,5 +46,4 @@ class Business(models.Model):
   shops = models.ForeignKey(Shop, null=True, editable=False)
 
   def __unicode__(self):
-    print(clr.red.bold(self.address))
     return self.name + ' | ' + str(self.address)

@@ -13,14 +13,12 @@ class TimeSlotsSerializer(serializers.ModelSerializer):
 class ChairsSerializer(serializers.ModelSerializer):
   class Meta:
     model = Chair
-    fields = '__all__'
+    exclude = ('time_slots', )
 
 class ShopsSerializer(serializers.ModelSerializer):
-  # chairs = ChairsSerializer()
   class Meta:
     model = Shop
-
-    fields = '__all__'
+    exclude = ('chairs' ,)
 
 class BusinessSerializer(serializers.ModelSerializer):
   shops = ShopsSerializer()
