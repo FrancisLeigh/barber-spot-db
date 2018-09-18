@@ -44,6 +44,7 @@ class AddressView(APIView):
 
     return Response({
       str(id_key): str(premesis.id),
+      'id': str(premesis.address.id),
       'address': str(premesis.address)
     })
 
