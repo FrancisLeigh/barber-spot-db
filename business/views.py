@@ -48,6 +48,24 @@ class AddressView(APIView):
       'address': str(premesis.address)
     })
 
+  def put(self, request, shop_id=False):
+    if shop_id:
+      id_key = 'shop_id'
+      premesis = Shop.objects.filter(id=shop_id).first()
+
+      serializer = ShopsSerializer(premesis, data=request.data)
+
+    else:
+      id_key = 'business_id'
+      premesis = Business.objects.all().first()
+
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=get_status('UPDATED'))
+
+    return Response(serializer.errors, status=get_status('ERROR'))
+
 
 # Shop
 class ShopsView(APIView):

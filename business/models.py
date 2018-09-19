@@ -14,7 +14,6 @@ class Business(models.Model):
   address = AddressField(null=True)
   business_image = models.CharField(max_length=1000, blank=True)
 
-
   def __unicode__(self):
     return self.name + ' | ' + str(self.address)
 
@@ -33,7 +32,7 @@ class Shop(models.Model):
 
 class ShopDayTrade(models.Model):
   shop_id = models.ForeignKey('Shop', null=True)
-  days = models.CharField(max_length=100, blank=True)
+  day = models.CharField(max_length=100, blank=True)
   opens = models.TimeField(auto_now=False, default=datetime.now().replace(hour=9, minute=0, second=0, microsecond=0))
   closes = models.TimeField(auto_now=False, default=datetime.now().replace(hour=17, minute=30, second=0, microsecond=0))
   closed = models.BooleanField(default=False)

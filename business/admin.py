@@ -11,34 +11,31 @@ import clr
 
 from models import Business, Shop, Chair, TimeSlot, ShopDayTrade
 DAYS= (
-    ('monday', 'Monday'),
-    ('tuesday', 'Tuesday'),
-    ('wednesday', 'Wednesday'),
-    ('thursday', 'Thursday'),
-    ('friday', 'Friday'),
-    ('saturday', 'Saturday'),
-    ('sunday', 'Sunday'),
+    (1, 'Monday'),
+    (2, 'Tuesday'),
+    (3, 'Wednesday'),
+    (4, 'Thursday'),
+    (5, 'Friday'),
+    (6, 'Saturday'),
+    (7, 'Sunday'),
 )
 class ShopDayTradeAdminForm(forms.ModelForm):
-  days = forms.MultipleChoiceField(choices = DAYS, required=False)
+
+  day = forms.ChoiceField(choices=DAYS)
+
   class Meta:
     model = ShopDayTrade
     ordering = ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')
     fields = '__all__'
 
-  def clean_days(self):
-    days = self.cleaned_data['days']
-    print days
-    print days
-    if not days:
-      raise forms.ValidationError("Pick a day or days")
+  def clean_day(self):
+    day = self.cleaned_data['day']
+    if not day:
+      raise forms.ValidationError("Pick a day")
 
-    if len(days) > 1:
-      days = ', '.join(days)
-    else:
-      days = ''.join(days)
+    day = ''.join(day)
 
-    return days
+    return day
 
 class ShopDayTradeAdmin(admin.ModelAdmin):
   form = ShopDayTradeAdminForm
