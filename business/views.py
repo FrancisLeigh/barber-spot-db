@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Business, Shop, Chair, TimeSlot, DayTradeTime, TradeTime
-from .serializers import BusinessSerializer, ShopsSerializer, ChairsSerializer, TimeSlotsSerializer, HoursSerializer, DaySerializer
+from .models import Business, Shop, Chair, TimeSlot, ShopDayTrade
+from .serializers import BusinessSerializer, ShopsSerializer, ChairsSerializer, TimeSlotsSerializer, ShopDayTradeSerializer
 
 import clr
 
@@ -92,7 +92,6 @@ class ShopView(APIView):
 
     return Response(status=get_status('DELETED'))
 
-# Chair
 class ChairsView(APIView):
 
   def get(self, request, shop_id=False):
@@ -173,8 +172,8 @@ class TimeSlotsView(APIView):
     return Response(serializer.errors, status=get_status('ERROR'))
 
 class TimeSlotView(APIView):
-  def get(self, request, slot_id):
-    ts = TimeSlot.objects.filter(id=slot_id).first()
+  def get(self, request, chair_id, slot_id):
+    ts = TimeSlot.objects.filter(chair_id=chair_id, id=slot_id).first()
     serializer = TimeSlotsSerializer(ts)
 
     return Response(serializer.data)
@@ -197,16 +196,53 @@ class TimeSlotView(APIView):
     return Response(status=get_status('DELETED'))
 
 
-class HoursView(APIView):
+class TradingHoursView(APIView):
   def get(self, request, shop_id=False):
-    hrs = TradeTime.objects.filter(shop_id=shop_id).first()
-    serializer = HoursSerializer(hrs)
+    ths = ShopDayTrade.objects.filter(shop_id=shop_id)
+    serializer = ShopDayTradeSerializer(ths, many=True)
 
     return Response(serializer.data)
 
-class DayView(APIView):
+  def post(self, request, shop_id=False):
+    if ShopDayTrade.objects.filter(shop_id=shop_id).count() < 7:
+      if request.data['shop_id'] is False:
+        request.data['shop_id'] = shop_id
+
+      serializer = ShopDayTradeSerializer(data=request.data)
+
+      if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=get_status('CREATED'))
+
+      return Response(serializer.errors, status=get_status('ERROR'))
+    else :
+      return Response({'error': 'Cannot add more than 7 days a week.'}, status=get_status('ERROR'))
+
+class TradingHourView(APIView):
   def get(self, request, shop_id=False, day_id=False):
-    day = DayTradeTime.objects.filter(shop_id=shop_id, id=day_id).first()
-    serializer = DaySerializer(day)
+    ths = ShopDayTrade.objects.filter(shop_id=shop_id, id=day_id).first()
+    serializer = ShopDayTradeSerializer(ths)
 
     return Response(serializer.data)
+
+  def put(self, request, shop_id=False, day_id=False):
+    if day_id is False:
+      day_id = request.data.id
+    if shop_id is False:
+      shop_id = request.data.shop_id
+
+    dayToEdit = ShopDayTrade.objects.filter(shop_id=shop_id, id=day_id).first()
+    serializer = ShopDayTradeSerializer(dayToEdit, data=request.data)
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=get_status('UPDATED'))
+
+    return Response(serializer.errors, status=get_status('ERROR'))
+
+  def delete(self, request, shop_id=False, day_id=False):
+    slotToDelete = ShopDayTrade.objects.filter(id=day_id).first()
+    slotToDelete.delete()
+
+    return Response(status=get_status('DELETED'))
+
