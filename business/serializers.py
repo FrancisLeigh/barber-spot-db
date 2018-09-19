@@ -13,7 +13,7 @@ class ShopsSerializer(serializers.ModelSerializer):
     fields = '__all__'
 
 class ShopDayTradeSerializer(serializers.ModelSerializer):
-  day = serializers.IntegerField()
+  day = serializers.ListSerializer(child=serializers.IntegerField())
   class Meta:
     model = ShopDayTrade
     fields = '__all__'

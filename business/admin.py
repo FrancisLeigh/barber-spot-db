@@ -21,7 +21,7 @@ DAYS= (
 )
 class ShopDayTradeAdminForm(forms.ModelForm):
 
-  day = forms.ChoiceField(choices=DAYS)
+  day = forms.MultipleChoiceField(choices=DAYS)
 
   class Meta:
     model = ShopDayTrade
@@ -32,10 +32,11 @@ class ShopDayTradeAdminForm(forms.ModelForm):
     day = self.cleaned_data['day']
     if not day:
       raise forms.ValidationError("Pick a day")
+    if len(day) > 1:
+      day = ''.join(day)
+      return day
 
-    day = ''.join(day)
-
-    return day
+    return day[0]
 
 class ShopDayTradeAdmin(admin.ModelAdmin):
   form = ShopDayTradeAdminForm

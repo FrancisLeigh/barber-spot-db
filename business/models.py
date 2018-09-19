@@ -39,9 +39,9 @@ class ShopDayTrade(models.Model):
 
   def __unicode__(self):
     if self.closed is True:
-      return self.days + ' | closed'
+      return self.day + ' | closed'
     else:
-      return self.days + ' | ' + str(self.opens) + ' - ' + str(self.closes)
+      return self.day + ' | ' + str(self.opens) + ' - ' + str(self.closes)
 
 class Chair(models.Model):
   shop_id = models.ForeignKey('Shop', null=True)
